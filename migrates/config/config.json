@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "riyazclasses",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
