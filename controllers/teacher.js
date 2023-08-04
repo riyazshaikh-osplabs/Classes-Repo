@@ -1,4 +1,4 @@
-const { SignupTeacher } = require("../migrates/models/dbHelper/helper");
+const { SignupTeacher } = require("../models/dbHelper/helper");
 const { SendResponse } = require("../utils/utils");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

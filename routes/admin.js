@@ -1,21 +1,15 @@
 const router = require("express").Router();
 
-const { Signin, AddLocation, CreateCourse, AssignTeacherToCourse, EntrollStudentToCourse } = require("../controllers/admin");
+const { Signin } = require("../controllers/admin");
+const { ValidateUserData, ValidateTokenForAdmin } = require("../middlewares/auth");
+const { ValidateSigninFields, ValidateErrors } = require("../middlewares/validator");
 
-const { ValidateUserData, ValidateCourseName, ValidateTeacherExistence } = require("../migrates/models/dbHelper/helper");
 
-const { ValidateTokenForAdmin, ValidateCourseDuration, ValidateStudentId, ValidateCourseId } = require("../middlewares/auth");
-
-const { ValidateSigninFields, ValidateErrors, ValidateLocationFields, ValidateCreateCourseFields,
-    ValidateTeacherFields, ValidateStudentEnrollment } = require("../middlewares/validator");
-
+const ProtectedAdminRoutes = require("./protected/admin")
 
 router.post("/signin", ValidateSigninFields, ValidateErrors, ValidateUserData, Signin);
-router.post("/locations", ValidateLocationFields, ValidateErrors, ValidateTokenForAdmin, AddLocation);
-router.post("/create-course", ValidateCreateCourseFields, ValidateErrors, ValidateTokenForAdmin, ValidateCourseName, ValidateCourseDuration, CreateCourse);
-router.post("/enroll-student", ValidateStudentEnrollment, ValidateErrors, ValidateTokenForAdmin, ValidateCourseId, ValidateStudentId, EntrollStudentToCourse);
 
+router.use("/protected", ValidateTokenForAdmin, ProtectedAdminRoutes);
 
-router.put("/assign-teacher", ValidateTeacherFields, ValidateErrors, ValidateTokenForAdmin, ValidateTeacherExistence, AssignTeacherToCourse);
 
 module.exports = router;

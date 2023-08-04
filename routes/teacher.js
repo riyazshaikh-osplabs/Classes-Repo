@@ -1,8 +1,7 @@
 const router = require("express").Router();
 
 const { Signup, Signin } = require("../controllers/teacher");
-
-const { ValidateUserExists, ValidateCityIdAndStateId, ValidateUserData } = require("../migrates/models/dbHelper/helper");
+const { ValidateUserExists, ValidateCityIdAndStateId, ValidateUserData } = require("../middlewares/auth");
 
 const { ValidateSignupFields, ValidateSigninFields, ValidateErrors } = require("../middlewares/validator");
 

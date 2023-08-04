@@ -1,6 +1,6 @@
 'use strict';
 
-const { generateDate } = require('../../utils/utils');
+const { generateDate } = require('../utils/utils');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {

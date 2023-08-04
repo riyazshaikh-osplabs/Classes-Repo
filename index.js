@@ -1,6 +1,8 @@
 require("dotenv").config();
+require("./config/config")
 const { app } = require("./setup/express");
 const { PageNotFound, SendError } = require("./utils/utils");
+
 
 const RouteHandler = require("./routes/index");
 

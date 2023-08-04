@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../setup/db');
-const { generateDate } = require('../../utils/utils');
+const { sequelize } = require('../setup/db');
+const { generateDate } = require('../utils/utils');
 const Course = require('./course');
 const Student = require('./student');
 

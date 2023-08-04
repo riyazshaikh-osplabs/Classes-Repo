@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   async up(queryInterface, Sequelize) {
     const adminUserDetails = {
-      Id: 3,
+      Id: 1,
       FirstName: 'Riyaz',
       LastName: 'Shaikh',
       Mobile: 8163090639,

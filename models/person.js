@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
-const { sequelize } = require('../../setup/db');
-const { generateDate } = require("../../utils/utils");
+const { sequelize } = require('../setup/db');
+const { generateDate } = require("../utils/utils");
 const City = require("./city");
 const State = require("./state");
 

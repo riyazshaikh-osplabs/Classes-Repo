@@ -1,7 +1,9 @@
 const { SendResponse } = require("../utils/utils");
-const { CreateLocation, RegisterCourse, FetchTeacherById, CheckIfCourseExists, AssignTeacher, CheckStudentExistingEnrollment, TeacherEnrollment, EnrollStudent } = require("../migrates/models/dbHelper/helper")
+const { CreateLocation, RegisterCourse, FetchTeacherById, CheckIfCourseExists, AssignTeacher,
+    CheckStudentExistingEnrollment, EnrollStudent } = require("../models/dbHelper/helper");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { logger } = require("../setup/logger");
 
 const Signin = async (req, res, next) => {
     const { Password } = req.body;
@@ -84,17 +86,20 @@ const EntrollStudentToCourse = async (req, res, next) => {
     const { CourseId, StudentId, EnrolledOn } = req.body;
     try {
 
-        const existingEnrollment = await CheckStudentExistingEnrollment(CourseId, StudentId);
-        if (existingEnrollment) {
+        const existingEnrollments = await CheckStudentExistingEnrollment(CourseId, StudentId);
+        logger.debug(existingEnrollments, "kya bolte bhai ");
+        console.log(existingEnrollments, "kya bolte bhai ");
+
+        if (existingEnrollments.some((enrolledStudent) => enrolledStudent)) {
             return SendResponse(res, 409, "Student is already enrolled in this course", [], [], false);
         };
 
-        const validateTeacherEnrollment = await TeacherEnrollment(CourseId);
-        if (!validateTeacherEnrollment) {
-            return SendResponse(res, 409, "Teacher is not enrolled in this course", [], [], false);
-        }
-
-        const enrollment = await EnrollStudent(CourseId, StudentId, EnrolledOn);
+        // const validateTeacherEnrollment = await ValidateTeacherEnrollment(CourseId);
+        // if (!validateTeacherEnrollment) {
+        //     return SendResponse(res, 409, "Teacher is not enrolled in this course", [], [], false);
+        // }
+        const Students = req.Students;
+        const enrollment = await EnrollStudent(CourseId, Students, EnrolledOn);
 
         return SendResponse(res, 200, "Student enrolled to the course successfully", enrollment, [], true);
     } catch (error) {

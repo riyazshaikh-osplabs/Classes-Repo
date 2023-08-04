@@ -1,8 +1,7 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../setup/db');
-const Teacher = require('./teacher');
+const { sequelize } = require('../setup/db');
 
-const Course = sequelize.define('Course', {
+const Location = sequelize.define('Location', {
   Id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -12,22 +11,15 @@ const Course = sequelize.define('Course', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  Description: {
+  Address: {
     type: DataTypes.STRING,
-    allowNull: true,
-  },
-  Duration: {
-    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  TeacherId: {
+  MaxStudents: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: Teacher,
-      key: "Id"
-    }
-  }
+    allowNull: false,
+    defaultValue: 0,
+  },
 }, { freezeTableName: true, timestamps: false });
 
-module.exports = Course;
+module.exports = Location;

@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../setup/db');
+const { sequelize } = require('../setup/db');
 const Person = require('./person');
 
-const Admin = sequelize.define('Admin', {
+const Teacher = sequelize.define('Teacher', {
   Id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -10,11 +10,11 @@ const Admin = sequelize.define('Admin', {
   },
   PersonId: {
     type: DataTypes.INTEGER,
-    references: {
+    refereneces: {
       model: Person,
       key: 'Id'
     }
   }
 }, { freezeTableName: true, timestamps: false });
 
-module.exports = Admin;
+module.exports = Teacher;
