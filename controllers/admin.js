@@ -24,7 +24,7 @@ const Signin = async (req, res, next) => {
             Role: "Admin"
         };
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "240s" });
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "24hrs" });
 
         const user = { token };
 
@@ -98,6 +98,7 @@ const EntrollStudentToCourse = async (req, res, next) => {
         // if (!validateTeacherEnrollment) {
         //     return SendResponse(res, 409, "Teacher is not enrolled in this course", [], [], false);
         // }
+        logger.log("req obj", req.Students);
         const Students = req.Students;
         const enrollment = await EnrollStudent(CourseId, Students, EnrolledOn);
 

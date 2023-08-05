@@ -13,5 +13,4 @@ sequelize
     .then(() => logger.log(`database connected successfully`))
     .catch((error) => logger.log(`database connection failed... ${error}`));
 
-
 module.exports = { sequelize };

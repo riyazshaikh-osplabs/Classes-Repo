@@ -91,20 +91,25 @@ const AssignTeacher = async (course, TeacherId) => {
 };
 
 const CheckStudentExistingEnrollment = async (Id, StudentId) => {
-    const existingEnrollmentOfStudents = StudentId.map(async (studentId) => {
+    const existingEnrollmentOfStudents = [StudentId].map(async (studentId) => {
         const existingEnrollment = await CourseStudent.findOne({
             where: {
                 CourseId: Id,
                 StudentId: studentId
             }
         });
+        logger.log("123", existingEnrollment);
         return existingEnrollment;
     });
+    logger.log("kalim", existingEnrollmentOfStudents);
     return Promise.all(existingEnrollmentOfStudents);
 };
 
 const EnrollStudent = async (CourseId, Students, EnrolledOn) => {
-    const courseStudentArray = Students.map((student) => {
+    logger.log("data is here", Students, Students.Id);
+    let studenIds = Array.isArray(Students) ? Students.map(s => s.Id) : [Students.Id];
+    logger.log("hello", studenIds);
+    const courseStudentArray = studenIds.map((student) => {
         console.log(student);
         const courseStudent = CourseStudent.create({
             CourseId: CourseId,

@@ -121,22 +121,32 @@ const ValidateStudentDetails = async (req, res, next) => {
         }
         logger.log("course", course);
 
-
+        logger.log("riyaz", StudentId);
         if (Array.isArray(StudentId)) {
-
-            const studentBulk = StudentId.map(async (user) => {
-                const studentsExists = await Student.findByPk(user);
+            debugger
+            const studentBulk = [];
+            StudentId.forEach(async sid => {
+                const studentsExists = await Student.findByPk(sid);
+                logger.log("studentexists", studentsExists);
                 if (!studentsExists) {
                     return SendResponse(res, 409, `Student of id ${user} not found`, [], [], false);
                 }
-                return studentsExists;
-            });
+                studentBulk.push(studentsExists)
+            })
+            // const studentBulk = StudentId.map(async (user) => {
+            //     const studentsExists = await Student.findByPk(user);
+            //     logger.log("studentexists", studentsExists);
+            //     if (!studentsExists) {
+            //         return SendResponse(res, 409, `Student of id ${user} not found`, [], [], false);
+            //     }
+            //     return studentsExists;
+            // });
 
             logger.debug("studentBulk", studentBulk);
             req.Students = studentBulk;
 
         } else {
-
+            debugger
             const studentOne = await Student.findByPk(StudentId);
             if (!studentOne) {
                 return SendResponse(res, 409, "Student Not found", [], [], false);
