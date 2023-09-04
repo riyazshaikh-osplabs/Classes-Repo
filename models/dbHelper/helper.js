@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const { Student, Person, City, State, Teacher, Location, Course, CourseStudent } = require("../index");
+const { Student, Person, City, State, Teacher, Location, Course, CourseStudent, Schedule } = require("../index");
 const { logger } = require("../../setup/logger");
 
 const GenerateHashPassword = async (password) => {
@@ -7,16 +7,18 @@ const GenerateHashPassword = async (password) => {
     return bcrypt.hash(password, salt);
 }
 
-const SignupStudent = async (FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId) => {
+const SignupStudent = async (FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId, transaction) => {
     const hashedPassword = await GenerateHashPassword(Password);
 
-    const person = await Person.create({
-        FirstName, LastName, Mobile, Email, Password: hashedPassword, Address, CityId, StateId
-    });
+    const person = await Person.create(
+        { FirstName, LastName, Mobile, Email, Password: hashedPassword, Address, CityId, StateId },
+        { transaction }
+    );
 
-    await Student.create({
-        PersonId: person.Id
-    });
+    await Student.create(
+        { PersonId: person.Id },
+        { transaction }
+    );
 
     return { ...person };
 };
@@ -122,21 +124,24 @@ const EnrollStudent = async (CourseId, Students, EnrolledOn) => {
     return courseStudentPromises.then(() => courseStudentPromises);
 };
 
-// const ValidateTeacherEnrollment = async (CourseId) => {
-
-//     const teacher = await Course.findOne({
-//         where: {
-//             Id: CourseId,
-//             TeacherId: { [Op.not]: null }
-//         }
-//     });
-//     logger.log(teacher);
-//     return teacher;
-
-// };
+const CreateNewSchedule = async (CourseId, LocationId, StartTime, EndTime, transaction) => {
+    const schedule = await Schedule.create(
+        { CourseId, LocationId, StartTime, EndTime },
+        { transaction }
+    );
+    return schedule;
+};
 
 module.exports = {
-    SignupStudent, SignupTeacher, EnrollStudent, FetchTeacherById, RegisterCourse, CreateLocation, CheckIfCourseExists,
-    AssignTeacher, CheckStudentExistingEnrollment
+    SignupStudent,
+    SignupTeacher,
+    EnrollStudent,
+    FetchTeacherById,
+    RegisterCourse,
+    CreateLocation,
+    CheckIfCourseExists,
+    AssignTeacher,
+    CheckStudentExistingEnrollment,
+    CreateNewSchedule
 };
 

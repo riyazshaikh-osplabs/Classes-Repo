@@ -1,9 +1,11 @@
 const { SendResponse } = require("../utils/utils");
 const { CreateLocation, RegisterCourse, FetchTeacherById, CheckIfCourseExists, AssignTeacher,
-    CheckStudentExistingEnrollment, EnrollStudent } = require("../models/dbHelper/helper");
+    CheckStudentExistingEnrollment, EnrollStudent, CreateNewSchedule } = require("../models/dbHelper/helper");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { logger } = require("../setup/logger");
+const { sequelize } = require("../setup/db");
+const { CheckForMaxStudents } = require("../middlewares/auth");
 
 const Signin = async (req, res, next) => {
     const { Password } = req.body;
@@ -99,6 +101,8 @@ const EntrollStudentToCourse = async (req, res, next) => {
         //     return SendResponse(res, 409, "Teacher is not enrolled in this course", [], [], false);
         // }
         logger.log("req obj", req.Students);
+
+
         const Students = req.Students;
         const enrollment = await EnrollStudent(CourseId, Students, EnrolledOn);
 
@@ -108,4 +112,33 @@ const EntrollStudentToCourse = async (req, res, next) => {
     }
 };
 
-module.exports = { Signin, AddLocation, CreateCourse, AssignTeacherToCourse, EntrollStudentToCourse };
+const CreateSchedule = async (req, res, next) => {
+    const { CourseId, LocationId, StartTime, EndTime } = req.body;
+    const transaction = await sequelize.transaction();
+    try {
+        const location = req.Location;
+
+        const scheduledStudents = await CheckForMaxStudents(LocationId, StartTime, EndTime);
+        if (scheduledStudents >= location.MaxStudents) {
+            return SendResponse(res, 409, "'Location has reached its maximum capacity of students.", [], [], false);
+        }
+
+        const schedule = await CreateNewSchedule(CourseId, LocationId, StartTime, EndTime, transaction);
+
+        await transaction.commit();
+        return SendResponse(res, 200, "Schedule created successfully", schedule, [], true);
+
+    } catch (error) {
+        await transaction.rollback();
+        next(error);
+    }
+};
+
+module.exports = {
+    Signin,
+    AddLocation,
+    CreateCourse,
+    AssignTeacherToCourse,
+    EntrollStudentToCourse,
+    CreateSchedule
+};

@@ -119,6 +119,24 @@ const ValidateStudentEnrollment = [
         .isISO8601("YYYY-MM-DD").toDate().withMessage('Invalid enrollment date. Must be a valid ISO8601 date.'),
 ];
 
+const isDateTimeFormat = (value) => {
+    // Regular expression to match the full date-time format "yyyy-MM-ddTHH:mm:ss.sssZ"
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]|[1-9]):[0-5]\d:[0-5]\d\.\d{3}(?:Z|[APap][Mm])$/;
+
+    if (!dateTimeRegex.test(value)) {
+        throw new Error('Invalid date-time format. Use "yyyy-MM-ddTHH:mm:ss.sssZ" format (24-hour) or "yyyy-MM-ddTHH:mm:ss.sssAM/PM" format (12-hour).');
+    }
+
+    return true;
+};
+
+const ValidateScheduleDetails = [
+    body('CourseId').notEmpty().withMessage("CourseId is required").isInt().withMessage('CourseId must be an integer.'),
+    body('StartTime').notEmpty().withMessage("StartTime is required").custom(isDateTimeFormat),
+    body('EndTime').notEmpty().withMessage("EndTime is required").custom(isDateTimeFormat),
+    body('LocationId').notEmpty().withMessage("LocationId is required").isInt().withMessage('LocationId must be an integer.'),
+];
+
 const ValidateErrors = (req, res, next) => {
 
     const errors = validationResult(req);
@@ -128,7 +146,15 @@ const ValidateErrors = (req, res, next) => {
     next();
 };
 
+
 module.exports = {
-    ValidateSignupFields, ValidateSigninFields, ValidateLocationFields, ValidateCreateCourseFields,
-    ValidateTeacherFields, ValidateStudentEnrollment, ValidateErrors
+    ValidateSignupFields,
+    ValidateSigninFields,
+    ValidateLocationFields,
+    ValidateCreateCourseFields,
+    ValidateTeacherFields,
+    ValidateStudentEnrollment,
+    ValidateScheduleDetails,
+    ValidateErrors,
+    isDateTimeFormat
 };

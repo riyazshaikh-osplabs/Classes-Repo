@@ -85,5 +85,16 @@ Schedule.belongsTo(Location, { foreignKey: 'LocationId', targetKey: 'Id' });
 Location.hasMany(Schedule, { foreignKey: 'LocationId', targetKey: 'Id' });
 
 
-module.exports = { State, City, Person, Student, Teacher, Admin, Course, CourseStudent, Location, Schedule };
+module.exports = {
+    State,
+    City,
+    Person,
+    Student,
+    Teacher,
+    Admin,
+    Course,
+    CourseStudent,
+    Location,
+    Schedule
+};
 

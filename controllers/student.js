@@ -1,4 +1,5 @@
 const { SignupStudent } = require("../models/dbHelper/helper");
+const { sequelize } = require("../setup/db");
 const { SendResponse } = require("../utils/utils");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -7,10 +8,14 @@ const Signup = async (req, res, next) => {
     const { FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId } = req.body;
     try {
 
-        const user = await SignupStudent(FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId);
+        const transaction = await sequelize.transaction();
+        const user = await SignupStudent(FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId, transaction);
+
+        await transaction.commit();
 
         return SendResponse(res, 200, "student signup successfull", user);
     } catch (error) {
+        await transaction.rollback();
         next(error);
     }
 };

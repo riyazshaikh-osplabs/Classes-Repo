@@ -1,8 +1,10 @@
 const { logger } = require("../setup/logger");
 const jwt = require("jsonwebtoken");
 const { SendResponse } = require("../utils/utils");
-const { Course, Student, Person, State, City } = require("../models");
+const { Course, Student, Person, State, City, Location, Schedule } = require("../models");
 const { CheckIfCourseExists, FetchTeacherById } = require("../models/dbHelper/helper");
+const { Op } = require("sequelize");
+const { isDateTimeFormat } = require("./validator");
 
 const ValidateTokenForStudent = (req, res, next) => {
     try {
@@ -266,7 +268,66 @@ const ValidateUserData = async (req, res, next) => {
     }
 };
 
+
+const ValidateScheduleTime = async (req, res, next) => {
+    const { StartTime, EndTime } = req.body;
+    try {
+        const startTime = new Date(StartTime);
+        const endTime = new Date(EndTime);
+        const timeDifference = endTime.getTime() - startTime.getTime();
+
+        const timeDifferenceInHours = timeDifference / (1000 * 60 * 60);
+        if (timeDifferenceInHours > 4) {
+            return SendResponse(res, 400, "The schedule should not exceed 4 hours", [], [], false);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const ValidateLocation = async (req, res, next) => {
+    const { LocationId } = req.body;
+
+    try {
+        const locationExists = await Location.findByPk(LocationId);
+        if (!locationExists) {
+            return SendResponse(res, 409, "Location Does not Exists", [], [], false);
+        }
+        req.Location = locationExists;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const CheckForMaxStudents = async (LocationId, StartTime, EndTime) => {
+    const countOfStudents = await Schedule.count({
+        where: {
+            LocationId,
+            [Op.and]: [
+                { StartTime: { [Op.lte]: StartTime } },
+                { EndTime: { [Op.gte]: EndTime } },
+            ],
+        },
+    });
+
+    return countOfStudents;
+};
+
 module.exports = {
-    ValidateTokenForStudent, ValidateTokenForTeacher, ValidateTokenForAdmin, ValidateStudentDetails, ValidateUserExists,
-    ValidateCourseName, ValidateTeacherExistence, ValidateCourseDuration, ValidateCityIdAndStateId, ValidateUserData
+    ValidateTokenForStudent,
+    ValidateTokenForTeacher,
+    ValidateTokenForAdmin,
+    ValidateStudentDetails,
+    ValidateUserExists,
+    ValidateCourseName,
+    ValidateTeacherExistence,
+    ValidateCourseDuration,
+    ValidateCityIdAndStateId,
+    ValidateScheduleTime,
+    ValidateLocation,
+    CheckForMaxStudents,
+    ValidateUserData
 };

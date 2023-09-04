@@ -32,4 +32,9 @@ const generateDate = () => {
     return new Date();
 };
 
-module.exports = { SendResponse, SendError, PageNotFound, generateDate };
+module.exports = {
+    SendResponse,
+    SendError,
+    PageNotFound,
+    generateDate
+};
