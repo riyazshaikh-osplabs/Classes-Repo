@@ -22,5 +22,6 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.1"
-  }
+  },
+  "private": "true"
 }

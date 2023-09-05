@@ -6,12 +6,12 @@ const jwt = require("jsonwebtoken");
 
 const Signup = async (req, res, next) => {
     const { FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId } = req.body;
+    const transaction = await sequelize.transaction();
     try {
 
-        const transaction = await sequelize.transaction();
         const user = await SignupStudent(FirstName, LastName, Mobile, Email, Password, Address, CityId, StateId, transaction);
 
-        await transaction.commit();
+        await transaction.commit()
 
         return SendResponse(res, 200, "student signup successfull", user);
     } catch (error) {
